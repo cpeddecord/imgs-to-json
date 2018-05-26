@@ -9,12 +9,19 @@ import (
 // TODO: make configurable
 var ROOT = "./images"
 
+// TODO: https://blog.golang.org/pipelines
 func main() {
 	paths := Walker(ROOT)
 	var imgData []map[string]string
 
+	c := make(chan map[string]string)
+
 	for _, p := range paths {
-		imgData = append(imgData, Exif(p))
+		go Exif(p, c)
+	}
+
+	for range paths {
+		imgData = append(imgData, <-c)
 	}
 
 	data, _ := json.Marshal(imgData)

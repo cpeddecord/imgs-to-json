@@ -7,7 +7,7 @@ import (
 
 var exiftool = "exiftool"
 
-func Exif(p string) map[string]string {
+func Exif(p string, c chan map[string]string) {
 	out, _ := exec.Command(exiftool, p).Output()
 	str := string(out[:])
 	arr := strings.Split(str, "\n")
@@ -33,5 +33,5 @@ func Exif(p string) map[string]string {
 		exif[k] = strings.Trim(splits[1], " ")
 	}
 
-	return exif
+	c <- exif
 }
