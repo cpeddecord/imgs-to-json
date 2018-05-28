@@ -7,6 +7,7 @@ import (
 
 var exiftool = "exiftool"
 
+// Exif runs the exiftool script and harvests wanted metadata from stdout
 func Exif(p string, c chan map[string]string) {
 	out, _ := exec.Command(exiftool, p).Output()
 	str := string(out[:])
@@ -19,8 +20,10 @@ func Exif(p string, c chan map[string]string) {
 		if s == "" {
 			continue
 		}
+
 		splits := strings.Split(s, " : ")
 
+		// some fields won't split correctly and we don't need those anyhow
 		if len(splits) == 1 {
 			continue
 		}
@@ -34,4 +37,24 @@ func Exif(p string, c chan map[string]string) {
 	}
 
 	c <- exif
+}
+
+// GetMetadata returns a slice of structs for wanted metadata given a root directory to walk from
+// TODO: https://blog.golang.org/pipelines
+func GetMetadata(root string) []ImgData {
+	paths := walker(root)
+	var imgDatas []ImgData
+
+	c := make(chan map[string]string)
+
+	for _, p := range paths {
+		go Exif(p, c)
+	}
+
+	for range paths {
+		imgStruct := Transcribe(<-c)
+		imgDatas = append(imgDatas, imgStruct)
+	}
+
+	return imgDatas
 }

@@ -4,25 +4,35 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 // TODO: make configurable
-var ROOT = "./images"
+var defaultRootPath = "./images"
 
-// TODO: https://blog.golang.org/pipelines
+func walker(root string) []string {
+	var paths []string
+
+	walk := func(path string, info os.FileInfo, err error) error {
+		// TODO make configurable
+		// TODO have default file types, jpg, jpeg, gif, etc.
+		if strings.Contains(path, ".jpg") {
+			paths = append(paths, path)
+		}
+		return nil
+	}
+
+	err := filepath.Walk(root, walk)
+	if err != nil {
+		panic(err)
+	}
+
+	return paths
+}
+
 func main() {
-	paths := Walker(ROOT)
-	var imgData []map[string]string
-
-	c := make(chan map[string]string)
-
-	for _, p := range paths {
-		go Exif(p, c)
-	}
-
-	for range paths {
-		imgData = append(imgData, <-c)
-	}
+	imgData := GetMetadata(defaultRootPath)
 
 	data, _ := json.Marshal(imgData)
 
