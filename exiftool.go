@@ -1,4 +1,4 @@
-package main
+package imgstojson
 
 import (
 	"os/exec"
@@ -42,7 +42,7 @@ func Exif(p string, c chan map[string]string) {
 // GetMetadata returns a slice of structs for wanted metadata given a root directory to walk from
 // TODO: https://blog.golang.org/pipelines
 func GetMetadata(root string) []ImgData {
-	paths := walker(root)
+	paths := Walker(root)
 	var imgDatas []ImgData
 
 	c := make(chan map[string]string)

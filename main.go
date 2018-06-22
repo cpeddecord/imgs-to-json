@@ -1,8 +1,6 @@
-package main
+package imgstojson
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,7 +9,7 @@ import (
 // TODO: make configurable
 var defaultRootPath = "./images"
 
-func walker(root string) []string {
+func Walker(root string) []string {
 	var paths []string
 
 	walk := func(path string, info os.FileInfo, err error) error {
@@ -31,18 +29,18 @@ func walker(root string) []string {
 	return paths
 }
 
-func main() {
-	imgData := GetMetadata(defaultRootPath)
+// func main() {
+// 	imgData := GetMetadata(defaultRootPath)
 
-	data, _ := json.Marshal(imgData)
+// 	data, _ := json.Marshal(imgData)
 
-	// TODO: make configuraable
-	file, err := os.Create("out.json")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
+// 	// TODO: make configuraable
+// 	file, err := os.Create("out.json")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer file.Close()
 
-	s := string(data[:])
-	fmt.Fprintf(file, s)
-}
+// 	s := string(data[:])
+// 	fmt.Fprintf(file, s)
+// }

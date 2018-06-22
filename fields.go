@@ -1,4 +1,4 @@
-package main
+package imgstojson
 
 import (
 	"regexp"
